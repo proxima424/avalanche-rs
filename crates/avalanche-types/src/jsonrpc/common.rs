@@ -2,8 +2,7 @@
 // Copied from <https://github.com/gakonst/ethers-rs/blob/master/ethers-providers/src/transports/common.rs>.
 // Remove once is <https://github.com/gakonst/ethers-rs/issues/1997> resolved.
 use std::fmt;
-
-use ethers_core::types::U256;
+use alloy_primitives::U256;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use thiserror::Error;

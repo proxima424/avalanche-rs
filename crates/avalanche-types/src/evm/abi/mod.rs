@@ -2,7 +2,8 @@
 #![allow(deprecated)]
 use std::io::{self, Error, ErrorKind};
 
-use ethers_core::abi::{Function, Token};
+// use ethers_core::abi::{Function, Token};
+use alloy_json_abi::{Function, Tokeni};
 
 /// ref. <https://github.com/foundry-rs/foundry/blob/master/common/src/abi.rs> "encode_args"
 pub fn encode_calldata(func: Function, arg_tokens: &[Token]) -> io::Result<Vec<u8>> {

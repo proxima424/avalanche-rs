@@ -243,9 +243,9 @@ impl Key {
         crate::key::secp256k1::libsecp256k1::PrivateKey::from_bytes(&b)
     }
 
-    pub fn to_ethers_core_signing_key(&self) -> ethers_core::k256::ecdsa::SigningKey {
+    pub fn to_ethers_core_signing_key(&self) -> alloy_signer::k256::ecdsa::SigningKey {
         let kb = self.to_bytes();
-        ethers_core::k256::ecdsa::SigningKey::from_bytes(GenericArray::from_slice(&kb)).unwrap()
+        alloy_signer::k256::ecdsa::SigningKey::from_bytes(GenericArray::from_slice(&kb)).unwrap()
     }
 }
 

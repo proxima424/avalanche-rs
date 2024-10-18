@@ -2,10 +2,12 @@
 use std::io::{self, Error, ErrorKind};
 
 use crate::hash;
-use bech32::{ToBase32, Variant};
+
 use bs58::{decode::DecodeBuilder, encode::EncodeBuilder, Alphabet};
 
 const CHECKSUM_LENGTH: usize = 4;
+
+
 
 /// Implements "formatting.EncodeWithChecksum" with "formatting.CB58".
 /// "ids.ShortID.String" appends checksum to the digest bytes.
@@ -168,9 +170,13 @@ fn test_encode_hex_with_checksum() {
 pub fn address(chain_id_alias: &str, hrp: &str, d: &[u8]) -> io::Result<String> {
     assert_eq!(d.len(), 20);
 
+    let hrp_instance = bech32::Hrp::parse(hrp).map_err(|e| {
+        Error::new(ErrorKind::InvalidInput, format!("invalid HRP: {}", e))
+    })?;
+    
     // No need to call "bech32.ConvertBits(payload, 8, 5, true)"
     // ".to_base32()" already does "bech32::convert_bits(d, 8, 5, true)"
-    let encoded = match bech32::encode(hrp, d.to_base32(), Variant::Bech32) {
+    let encoded = match bech32::encode::<bech32::Bech32>(hrp_instance, d) {
         Ok(enc) => enc,
         Err(e) => {
             return Err(Error::new(

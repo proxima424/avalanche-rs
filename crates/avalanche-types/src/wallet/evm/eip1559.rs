@@ -6,10 +6,14 @@ use crate::{
     wallet::{self, evm},
 };
 use ethers::{prelude::Eip1559TransactionRequest, utils::Units::Gwei};
-use ethers_core::types::transaction::eip2718;
+
+use alloy_consensus::transaction::TypedTransaction;
+
 use ethers_providers::Middleware;
 use lazy_static::lazy_static;
-use primitive_types::{H160, H256, U256};
+
+use alloy::primitives::{B160,B256,U256}
+// use primitive_types::{H160, H256, U256};
 use tokio::time::Duration;
 
 // With EIP-1559, the fees are: units of gas used * (base fee + priority fee).
@@ -125,7 +129,7 @@ where
     /// If the recipient is a contract account/address, the transaction will execute the contract code.
     /// If the recipient is None, the transaction is for contract creation.
     /// The contract address is created based on the signer address and transaction nonce.
-    pub recipient: Option<H160>,
+    pub recipient: Option<B160>,
 
     /// Transfer amount value.
     pub value: Option<U256>,
@@ -221,7 +225,7 @@ where
     }
 
     #[must_use]
-    pub fn recipient(mut self, to: impl Into<H160>) -> Self {
+    pub fn recipient(mut self, to: impl Into<B160>) -> Self {
         self.recipient = Some(to.into());
         self
     }
@@ -383,7 +387,7 @@ where
             // the hash returned from dry mode will be different
             // ref. "ethers-middleware/signer" "send_transaction"
             let gas_none = tx_request.gas.is_none();
-            let mut typed_tx: eip2718::TypedTransaction = tx_request.into();
+            let mut typed_tx: TypedTransaction = tx_request.into();
             if gas_none {
                 log::info!("dry-mode estimating gas");
                 let estimated_gas = self

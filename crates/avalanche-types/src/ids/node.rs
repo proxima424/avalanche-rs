@@ -11,7 +11,8 @@ use std::{
 
 use lazy_static::lazy_static;
 use serde::{self, de::Visitor, Deserialize, Deserializer, Serialize, Serializer};
-use zerocopy::{AsBytes, FromBytes, FromZeroes, Unaligned};
+use zerocopy::{IntoBytes, FromZeros, Unaligned};
+
 
 use crate::{formatting, hash, ids::short};
 
@@ -23,8 +24,8 @@ lazy_static! {
 }
 
 /// ref. <https://pkg.go.dev/github.com/ava-labs/avalanchego/ids#ShortID>
-/// ref. <https://docs.rs/zerocopy/latest/zerocopy/trait.AsBytes.html#safety>
-#[derive(Debug, Copy, Clone, Eq, AsBytes, FromZeroes, FromBytes, Unaligned)]
+/// ref. <https://docs.rs/zerocopy/0.8.3/zerocopy/trait.IntoBytes.html#safety>
+#[derive(Debug, Copy, Clone, Eq, IntoBytes, FromZeros, Unaligned)]
 #[repr(transparent)]
 pub struct Id([u8; LEN]);
 

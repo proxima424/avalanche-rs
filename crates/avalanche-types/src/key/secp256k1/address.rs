@@ -46,16 +46,16 @@ pub fn avax_address_to_short_bytes(chain_alias: &str, addr: &str) -> io::Result<
         addr.trim_start_matches(&pfx).to_string()
     };
 
-    let (hrp, data, _) = bech32::decode(&trimmed)
+    let (hrp, data) = bech32::decode(&trimmed)
         .map_err(|e| Error::new(ErrorKind::Other, format!("failed bech32::decode '{}'", e)))?;
 
-    let convert = bech32::convert_bits(&data, 5, 8, false).map_err(|e| {
-        Error::new(
-            ErrorKind::Other,
-            format!("failed bech32::convert_bits '{}'", e),
-        )
-    })?;
-    Ok((hrp, convert))
+    // let convert = bech32::convert_bits(&data, 5, 8, false).map_err(|e| {
+    //     Error::new(
+    //         ErrorKind::Other,
+    //         format!("failed bech32::convert_bits '{}'", e),
+    //     )
+    // })?;
+    Ok((hrp.to_lowercase(), data))
 }
 
 /// RUST_LOG=debug cargo test --package avalanche-types --lib -- key::secp256k1::address::test_avax_address_to_short_bytes --exact --show-output

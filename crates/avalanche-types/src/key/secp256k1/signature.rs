@@ -1,12 +1,18 @@
 use crate::errors::{Error, Result};
 use ecdsa::RecoveryId as EcdsaRecoveryId;
-use ethers_core::{k256::ecdsa::Signature as KSig, types::Signature as EthSig};
+// use ethers_core::{k256::ecdsa::Signature as KSig, types::Signature as EthSig};
+
+use alloy::signers::k256::ecdsa::Signature as KSig;
+use alloy_primitives::Signature as EthSig;
+
+
+
 use k256::{
     ecdsa::{RecoveryId, Signature, VerifyingKey},
     FieldBytes,
 };
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
-use zerocopy::AsBytes;
+use zerocopy::IntoBytes;
 
 /// The length of recoverable ECDSA signature.
 /// "github.com/decred/dcrd/dcrec/secp256k1/v3/ecdsa.SignCompact" outputs
@@ -190,20 +196,20 @@ pub fn sig_from_digest_bytes_trial_recovery(
     let r_bytes: FieldBytes = sig.r().into();
     let s_bytes: FieldBytes = sig.s().into();
 
-    let r = primitive_types::U256::from_big_endian(r_bytes.as_slice());
-    let s = primitive_types::U256::from_big_endian(s_bytes.as_slice());
+    let r = alloy_primitives::U256::from_big_endian(r_bytes.as_slice());
+    let s = alloy_primitives::U256::from_big_endian(s_bytes.as_slice());
 
     Ok(EthSig {
-        r,
-        s,
         v: recid.to_byte() as u64,
+        r,
+        s,     
     })
 }
 
 /// Modify the v value of a signature to conform to eip155
 /// ref. <https://github.com/gakonst/ethers-rs/blob/master/ethers-signers/src/aws/utils.rs> "apply_eip155"
 /// ref. <https://github.com/gakonst/ethers-rs/pull/2300>
-pub fn apply_eip155(sig: &mut ethers_core::types::Signature, chain_id: u64) {
+pub fn apply_eip155(sig: &mut EthSig, chain_id: u64) {
     let v = (chain_id * 2 + 35) + sig.v;
     sig.v = v;
 }
