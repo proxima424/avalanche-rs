@@ -90,7 +90,7 @@ fn test_keccak256() {
     assert_eq!(d1.0.len(), 32);
 
     // ref. <https://github.com/gakonst/ethers-rs/blob/master/ethers-core/src/utils/hash.rs> "keccak256"
-    let d2 = ethers_core::utils::keccak256(&digest_input);
+    let d2 = alloy::primitives::keccak256(&digest_input);
     let d2 = primitive_types::H256::from_slice(&d2);
     assert_eq!(d1, d2);
 }

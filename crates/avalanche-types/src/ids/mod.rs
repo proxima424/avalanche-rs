@@ -25,7 +25,7 @@ use crate::{
 };
 use lazy_static::lazy_static;
 use serde::{self, de::Visitor, Deserialize, Deserializer, Serialize, Serializer};
-use zerocopy::{IntoBytes, FromBytes, FromZeros, Unaligned};
+use zerocopy::{IntoBytes, FromZeros, Unaligned};
 
 pub const LEN: usize = 32;
 

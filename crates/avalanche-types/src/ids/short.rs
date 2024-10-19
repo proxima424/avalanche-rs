@@ -10,7 +10,7 @@ use std::{
 use crate::{formatting, hash, key::secp256k1};
 use lazy_static::lazy_static;
 use serde::{self, Deserialize, Deserializer, Serialize, Serializer};
-use zerocopy::{IntoBytes, FromBytes, FromZeros, Unaligned};
+use zerocopy::{IntoBytes, FromZeros, Unaligned};
 
 pub const LEN: usize = 20;
 
