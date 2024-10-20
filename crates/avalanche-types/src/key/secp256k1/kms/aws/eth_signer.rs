@@ -1,19 +1,20 @@
 use crate::{errors::Result, key};
 use async_trait::async_trait;
-use ethers_core::types::{
-    transaction::{eip2718::TypedTransaction, eip712::Eip712},
-    Address, Signature,
-};
+// use alloy::types::{
+//     transaction::{eip2718::TypedTransaction, eip712::Eip712}
+// };
+use alloy::rpc::types::TransactionRequest;
+use alloy::primitives::{Address,Signature};
 
 #[derive(Clone, Debug)]
 pub struct Signer {
     pub inner: super::Key,
-    pub chain_id: primitive_types::U256,
+    pub chain_id: alloy::primitives::U256,
     pub address: Address,
 }
 
 impl Signer {
-    pub fn new(inner: super::Key, chain_id: primitive_types::U256) -> Result<Self> {
+    pub fn new(inner: super::Key, chain_id: alloy::primitives::U256) -> Result<Self> {
         let address: Address = inner.to_public_key().to_h160();
         Ok(Self {
             inner,
@@ -24,7 +25,7 @@ impl Signer {
 
     async fn sign_digest_with_eip155(
         &self,
-        digest: ethers_core::types::H256,
+        digest: alloy::primitives::B256,
         chain_id: u64,
     ) -> Result<Signature> {
         let mut sig = self.inner.sign_digest(digest.as_ref()).await?;
@@ -57,7 +58,7 @@ impl ethers_signers::Signer for Signer {
 
     async fn sign_transaction(
         &self,
-        tx: &TypedTransaction,
+        tx: &TransactionRequest,
     ) -> std::result::Result<Signature, Self::Error> {
         let mut tx_with_chain = tx.clone();
         let chain_id = tx_with_chain
@@ -104,7 +105,7 @@ impl ethers_signers::Signer for Signer {
 
     fn with_chain_id<T: Into<u64>>(mut self, chain_id: T) -> Self {
         let chain_id: u64 = chain_id.into();
-        self.chain_id = primitive_types::U256::from(chain_id);
+        self.chain_id = alloy::primitives::U256::from(chain_id);
         self
     }
 }

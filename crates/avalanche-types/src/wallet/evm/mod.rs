@@ -7,6 +7,7 @@ use crate::{
     jsonrpc::client::evm as jsonrpc_client_evm,
     key, wallet,
 };
+use alloy::primitives::Address;
 use ethers::{
     prelude::{
         gas_escalator::{Frequency, GasEscalatorMiddleware, GeometricGasPrice},
@@ -59,7 +60,7 @@ where
     /// Fetches the current balance of the wallet owner.
     pub async fn balance(&self) -> Result<U256> {
         let cur_balance =
-            jsonrpc_client_evm::get_balance(&self.chain_rpc_url, self.inner.h160_address).await?;
+            jsonrpc_client_evm::get_balance(&self.chain_rpc_url, Address::from(self.inner.h160_address)).await?;
         Ok(cur_balance)
     }
 }

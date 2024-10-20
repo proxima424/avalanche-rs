@@ -8,11 +8,10 @@ use crate::{
 use ethers::{prelude::Eip1559TransactionRequest, utils::Units::Gwei};
 
 use alloy_consensus::transaction::TypedTransaction;
-
 use ethers_providers::Middleware;
 use lazy_static::lazy_static;
 
-use alloy::primitives::{B160,B256,U256}
+use alloy::primitives::{Address,B256,U256}
 // use primitive_types::{H160, H256, U256};
 use tokio::time::Duration;
 
@@ -129,7 +128,7 @@ where
     /// If the recipient is a contract account/address, the transaction will execute the contract code.
     /// If the recipient is None, the transaction is for contract creation.
     /// The contract address is created based on the signer address and transaction nonce.
-    pub recipient: Option<B160>,
+    pub recipient: Option<Address>,
 
     /// Transfer amount value.
     pub value: Option<U256>,
@@ -291,7 +290,7 @@ where
 
     /// Issues the transaction and returns the transaction Id.
     /// ref. "coreth,subnet-evm/internal/ethapi.SubmitTransaction"
-    pub async fn submit(&mut self) -> Result<H256> {
+    pub async fn submit(&mut self) -> Result<B256> {
         let max_priority_fee_per_gas = if let Some(v) = self.max_priority_fee_per_gas {
             format!("{} GWEI", super::wei_to_gwei(v))
         } else {
@@ -387,7 +386,7 @@ where
             // the hash returned from dry mode will be different
             // ref. "ethers-middleware/signer" "send_transaction"
             let gas_none = tx_request.gas.is_none();
-            let mut typed_tx: TypedTransaction = tx_request.into();
+            let mut typed_tx: TransactionRequest = tx_request.into();
             if gas_none {
                 log::info!("dry-mode estimating gas");
                 let estimated_gas = self
@@ -454,7 +453,7 @@ where
                     retryable,
                 }
             })?;
-        let sent_tx_hash = H256(pending_tx.tx_hash().0);
+        let sent_tx_hash = B256::from(pending_tx.tx_hash().0);
         if !self.check_receipt {
             log::info!("sent tx '0x{:x}'", sent_tx_hash);
             return Ok(sent_tx_hash);
@@ -481,7 +480,7 @@ where
         }
 
         let tx_receipt = tx_receipt.unwrap();
-        let tx_hash = H256(tx_receipt.transaction_hash.0);
+        let tx_hash = B256::from(tx_receipt.transaction_hash.0);
         log::info!("confirmed sent tx receipt '0x{:x}'", tx_hash);
 
         if !self.check_acceptance {
